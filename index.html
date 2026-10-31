@@ -1804,7 +1804,7 @@ html&gt;body{padding:0}&lt;/style&gt;
     &lt;/label&gt;
   &lt;/div&gt;
   &lt;div id=&quot;pcr-figure&quot; class=&quot;pcr-figure&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
-  &lt;div class=&quot;viz-controls pcr-controls&quot;&gt;
+  &lt;div class=&quot;pcr-controls&quot;&gt;
     &lt;label class=&quot;form-label&quot; for=&quot;pcr-forward&quot;&gt;Forward primer, 5′→3′
       &lt;input id=&quot;pcr-forward&quot; class=&quot;form-control&quot; maxlength=&quot;6&quot; inputmode=&quot;text&quot; autocomplete=&quot;off&quot; spellcheck=&quot;false&quot; aria-label=&quot;Forward primer, five prime to three prime&quot; placeholder=&quot;3 bases&quot;&gt;
     &lt;/label&gt;
@@ -1841,11 +1841,11 @@ html&gt;body{padding:0}&lt;/style&gt;
   #toy-pcr .seq .gap { color:var(--muted-foreground); }
   #toy-pcr .strand .end { color:var(--muted-foreground); width:2ch; }
   #toy-pcr .strand .note { font-family:inherit; letter-spacing:0; color:var(--muted-foreground); font-size:.8em; }
-  #toy-pcr .pcr-controls { margin-top:.65rem; align-items:end; }
+  #toy-pcr .pcr-controls { display:flex; flex-wrap:wrap; align-items:end; justify-content:flex-start; gap:.75rem; margin-top:.65rem; }
   #toy-pcr .pcr-setup { margin:.5rem 0 .7rem; align-items:end; }
   #toy-pcr .pcr-setup label { min-width:9rem; }
   #toy-pcr .pcr-setup select { display:block; width:8rem; margin-top:.25rem; }
-  #toy-pcr .pcr-controls label { min-width:10rem; }
+  #toy-pcr .pcr-controls label { min-width:10rem; flex:0 0 auto; }
   #toy-pcr .pcr-controls input { display:block; width:8rem; margin-top:.25rem; text-transform:uppercase; }
   #toy-pcr .pcr-controls input[type=number] { text-transform:none; }
   #toy-pcr .pcr-result .dna-caption { color:var(--foreground); font-weight:500; }
@@ -1978,7 +1978,7 @@ html&gt;body{padding:0}&lt;/style&gt;
         return &#x27;&lt;span class=&quot;pcr-axis-tick text-small&#x27;+(i===0?&#x27; first&#x27;:&#x27;&#x27;)+(i===tickValues.length-1?&#x27; last&#x27;:&#x27;&#x27;)+&#x27;&quot; style=&quot;left:&#x27;+position+&#x27;%&quot;&gt;&#x27;+tick.label+&#x27;&lt;/span&gt;&#x27;;
       }).join(&#x27;&#x27;)+&#x27;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&#x27;;
     return &#x27;&lt;div class=&quot;pcr-result&quot;&gt;&lt;div class=&quot;stage-label&quot;&gt;After &#x27;+totalCycles+&#x27; cycles · &#x27;+total.toLocaleString()+&#x27; two-strand molecules total&lt;/div&gt;&#x27;+
-      &#x27;&lt;div class=&quot;pcr-result-controls&quot;&gt;&lt;label class=&quot;form-check&quot;&gt;&lt;input class=&quot;form-check-input&quot; id=&quot;pcr-show-bars&quot; type=&quot;checkbox&quot;&#x27;+(showBars?&#x27; checked&#x27;:&#x27;&#x27;)+&#x27;&gt;&lt;span class=&quot;form-check-label&quot;&gt;Show log count bars&lt;/span&gt;&lt;/label&gt;&lt;/div&gt;&#x27;+(showBars?axis:&#x27;&#x27;)+
+      &#x27;&lt;div class=&quot;pcr-result-controls&quot;&gt;&lt;label class=&quot;form-check&quot;&gt;&lt;input class=&quot;form-check-input&quot; id=&quot;pcr-show-bars&quot; type=&quot;checkbox&quot;&#x27;+(showBars?&#x27; checked&#x27;:&#x27;&#x27;)+&#x27;&gt;&lt;span class=&quot;form-check-label&quot;&gt;Show log count bars&lt;/span&gt;&lt;/label&gt;&lt;button class=&quot;btn&quot; type=&quot;button&quot; id=&quot;pcr-theme-result&quot;&gt;&#x27;+(activeTheme()===&#x27;dark&#x27;?&#x27;Light theme&#x27;:&#x27;Dark theme&#x27;)+&#x27;&lt;/button&gt;&lt;/div&gt;&#x27;+(showBars?axis:&#x27;&#x27;)+
       productTypes.map(type=&gt;{
         const sequence=block(type.name+&#x27; · &#x27;+moleculeLabel(type.count),row(type.top,&#x27;&#x27;,type.top.origin===&#x27;new&#x27;)+row(type.bottom,&#x27;&#x27;,type.bottom.origin===&#x27;new&#x27;));
         if(!showBars)return &#x27;&lt;div class=&quot;pcr-product-row&quot;&gt;&#x27;+sequence+&#x27;&lt;/div&gt;&#x27;;
@@ -2041,11 +2041,14 @@ html&gt;body{padding:0}&lt;/style&gt;
     else document.documentElement.dataset.theme=themeChoice;
     const dark=activeTheme()===&#x27;dark&#x27;;
     themeButton.textContent=dark?&#x27;Light theme&#x27;:&#x27;Dark theme&#x27;;
+    const resultButton=fig.querySelector(&#x27;#pcr-theme-result&#x27;);
+    if(resultButton)resultButton.textContent=themeButton.textContent;
   }
   function clearFeedback(){feedback.textContent=&#x27;&#x27;;feedback.className=&#x27;pcr-feedback&#x27;;}
   function restart(){stage=0;forward.value=&#x27;&#x27;;reverse.value=&#x27;&#x27;;totalCycles=3;totalInput.value=&#x27;3&#x27;;clearFeedback();render();save();}
   newDNA.addEventListener(&#x27;click&#x27;,()=&gt;{longIndex=(longIndex+1)%3;setSequence();restart();});
   themeButton.addEventListener(&#x27;click&#x27;,()=&gt;{themeChoice=activeTheme()===&#x27;dark&#x27;?&#x27;light&#x27;:&#x27;dark&#x27;;applyTheme();save();});
+  fig.addEventListener(&#x27;click&#x27;,event=&gt;{if(event.target?.id===&#x27;pcr-theme-result&#x27;){themeChoice=activeTheme()===&#x27;dark&#x27;?&#x27;light&#x27;:&#x27;dark&#x27;;applyTheme();save();}});
   window.matchMedia?.(&#x27;(prefers-color-scheme: dark)&#x27;).addEventListener?.(&#x27;change&#x27;,()=&gt;{if(themeChoice===&#x27;system&#x27;)applyTheme();});
   lengthSelect.addEventListener(&#x27;change&#x27;,()=&gt;{primerLength=Number(lengthSelect.value);setSequence();restart();});
   fig.addEventListener(&#x27;change&#x27;,event=&gt;{if(event.target?.id===&#x27;pcr-show-bars&#x27;){showBars=event.target.checked;render();save();}});
