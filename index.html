@@ -1871,8 +1871,10 @@ html&gt;body{padding:0}&lt;/style&gt;
   #toy-pcr .pcr-controls input { display:block; width:8rem; margin-top:.25rem; text-transform:uppercase; }
   #toy-pcr .pcr-controls input[type=number] { text-transform:none; }
   #toy-pcr .pcr-result .dna-caption { color:var(--foreground); font-weight:500; }
+  #toy-pcr .pcr-result.with-bars { display:grid; grid-template-columns:max-content 12rem; column-gap:1rem; width:max-content; max-width:100%; }
+  #toy-pcr .pcr-result.with-bars &gt; :is(.stage-label,.pcr-result-controls,.pcr-result-note) { grid-column:1 / -1; }
   #toy-pcr .pcr-result-controls { display:flex; align-items:center; gap:1rem; flex-wrap:wrap; margin:.25rem 0 .65rem; }
-  #toy-pcr .pcr-axis-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(8rem,12rem); gap:1rem; }
+  #toy-pcr .pcr-axis-row { display:grid; grid-column:1 / -1; grid-template-columns:minmax(0,1fr) 12rem; gap:1rem; }
   #toy-pcr .pcr-axis-title { color:var(--muted-foreground); margin-bottom:.15rem; }
   #toy-pcr .pcr-axis { position:relative; height:1.55rem; border-bottom:1px solid var(--border); margin-bottom:.35rem; }
   #toy-pcr .pcr-axis-tick { position:absolute; bottom:0; height:100%; transform:translateX(-50%); white-space:nowrap; color:var(--muted-foreground); }
@@ -1881,8 +1883,9 @@ html&gt;body{padding:0}&lt;/style&gt;
   #toy-pcr .pcr-axis-tick.first::after { left:0; }
   #toy-pcr .pcr-axis-tick.last { transform:translateX(-100%); }
   #toy-pcr .pcr-axis-tick.last::after { left:100%; }
-  #toy-pcr .pcr-product-row.with-bars { display:grid; grid-template-columns:minmax(0,1fr) minmax(8rem,12rem); align-items:center; gap:1rem; }
-  #toy-pcr .pcr-product-row.with-bars .dna-block { min-width:0; }
+  #toy-pcr .pcr-product-row.with-bars { display:contents; }
+  #toy-pcr .pcr-product-row.with-bars .dna-block { grid-column:1; }
+  #toy-pcr .pcr-product-row.with-bars .pcr-log-track { grid-column:2; align-self:center; }
   #toy-pcr .pcr-log-track { height:.75rem; background:var(--muted); }
   #toy-pcr .pcr-log-bar { height:100%; min-width:2px; background:var(--viz-series-1); }
   #toy-pcr .pcr-feedback { min-height:1.4rem; margin-top:.55rem; }
@@ -1894,11 +1897,12 @@ html&gt;body{padding:0}&lt;/style&gt;
     #toy-pcr .strand .note { grid-column:2 / -1; }
     #toy-pcr .pcr-controls label { min-width:8rem; }
   }
-  @media(max-width:620px){
-    #toy-pcr .pcr-axis-row { grid-template-columns:minmax(0,1fr); }
+  @media(max-width:800px){
+    #toy-pcr .pcr-result.with-bars { display:block; width:auto; }
+    #toy-pcr .pcr-axis-row { display:block; }
     #toy-pcr .pcr-axis-spacer { display:none; }
     #toy-pcr .pcr-axis-wrap { max-width:16rem; }
-    #toy-pcr .pcr-product-row.with-bars { grid-template-columns:minmax(0,1fr); gap:0; margin-bottom:.7rem; }
+    #toy-pcr .pcr-product-row.with-bars { display:block; margin-bottom:.7rem; }
     #toy-pcr .pcr-product-row.with-bars .dna-block { margin-bottom:.25rem; }
     #toy-pcr .pcr-log-track { max-width:16rem; }
   }
@@ -2000,7 +2004,7 @@ html&gt;body{padding:0}&lt;/style&gt;
         const position=(100*Math.log10(tick.value+1)/maxLog).toFixed(2);
         return &#x27;&lt;span class=&quot;pcr-axis-tick text-small&#x27;+(i===0?&#x27; first&#x27;:&#x27;&#x27;)+(i===tickValues.length-1?&#x27; last&#x27;:&#x27;&#x27;)+&#x27;&quot; style=&quot;left:&#x27;+position+&#x27;%&quot;&gt;&#x27;+tick.label+&#x27;&lt;/span&gt;&#x27;;
       }).join(&#x27;&#x27;)+&#x27;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&#x27;;
-    return &#x27;&lt;div class=&quot;pcr-result&quot;&gt;&lt;div class=&quot;stage-label&quot;&gt;After &#x27;+totalCycles+&#x27; cycles · &#x27;+total.toLocaleString()+&#x27; two-strand molecules total&lt;/div&gt;&#x27;+
+    return &#x27;&lt;div class=&quot;pcr-result&#x27;+(showBars?&#x27; with-bars&#x27;:&#x27;&#x27;)+&#x27;&quot;&gt;&lt;div class=&quot;stage-label&quot;&gt;After &#x27;+totalCycles+&#x27; cycles · &#x27;+total.toLocaleString()+&#x27; two-strand molecules total&lt;/div&gt;&#x27;+
       &#x27;&lt;div class=&quot;pcr-result-controls&quot;&gt;&lt;label class=&quot;form-check&quot;&gt;&lt;input class=&quot;form-check-input&quot; id=&quot;pcr-show-bars&quot; type=&quot;checkbox&quot;&#x27;+(showBars?&#x27; checked&#x27;:&#x27;&#x27;)+&#x27;&gt;&lt;span class=&quot;form-check-label&quot;&gt;Show log count bars&lt;/span&gt;&lt;/label&gt;&lt;button class=&quot;btn&quot; type=&quot;button&quot; id=&quot;pcr-theme-result&quot;&gt;&#x27;+(activeTheme()===&#x27;dark&#x27;?&#x27;Light theme&#x27;:&#x27;Dark theme&#x27;)+&#x27;&lt;/button&gt;&lt;/div&gt;&#x27;+(showBars?axis:&#x27;&#x27;)+
       productTypes.map(type=&gt;{
         const sequence=block(type.name+&#x27; · &#x27;+moleculeLabel(type.count),row(type.top,&#x27;&#x27;,type.top.origin===&#x27;new&#x27;)+row(type.bottom,&#x27;&#x27;,type.bottom.origin===&#x27;new&#x27;));
@@ -2009,7 +2013,7 @@ html&gt;body{padding:0}&lt;/style&gt;
         const bar=&#x27;&lt;div class=&quot;pcr-log-track&quot; role=&quot;img&quot; aria-label=&quot;&#x27;+type.name+&#x27;: &#x27;+moleculeLabel(type.count)+&#x27; on a logarithmic scale&quot;&gt;&lt;div class=&quot;pcr-log-bar&quot; style=&quot;width:&#x27;+width+&#x27;%&quot;&gt;&lt;/div&gt;&lt;/div&gt;&#x27;;
         return &#x27;&lt;div class=&quot;pcr-product-row with-bars&quot;&gt;&#x27;+sequence+bar+&#x27;&lt;/div&gt;&#x27;;
       }).join(&#x27;&#x27;)+
-      &#x27;&lt;p class=&quot;text-small&quot;&gt;Products with a flank have a single-stranded overhang. Only the last type has both strands exactly the target length.&lt;/p&gt;&lt;/div&gt;&#x27;;
+      &#x27;&lt;p class=&quot;text-small pcr-result-note&quot;&gt;Products with a flank have a single-stranded overhang. Only the last type has both strands exactly the target length.&lt;/p&gt;&lt;/div&gt;&#x27;;
   }
   function render(){
     let html=&#x27;&#x27;;
